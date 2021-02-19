@@ -11,13 +11,15 @@
 
 namespace amici {
 
-realtype getValueById(gsl::span<const char*> ids,
-                      gsl::span<const realtype> values,
-                      std::string const &id,
-                      const char *id_name);
+template<typename T>
+T getValueById(gsl::span<const char*> ids,
+               gsl::span<const T> values,
+               std::string const &id,
+               const char *id_name);
 
+template<typename T>
 int setValueByIdRegex(gsl::span<const char*> ids,
-                      gsl::span<realtype> values, realtype value,
+                      gsl::span<T> values, T value,
                       std::string const &regex,
                       const char *id_name);
 
@@ -27,11 +29,12 @@ int setValueByIdRegex(gsl::span<const char*> ids,
  * Names and IDs are not owned and are read-only. This keep compilation time
  * and memory requirements low for large models.
  */
+template<typename T>
 class NamedArray {
 public:
     NamedArray(gsl::span<const char*> ids,
                gsl::span<const char*> names,
-               std::vector<realtype> values)
+               std::vector<T> values)
         : ids_(ids), names_(names), values_(values)
     {
         Expects(ids_.size() == names_.size());
@@ -43,7 +46,7 @@ public:
      * @param id ID
      * @return Value for the given ID
      */
-    realtype getValueByID(std::string const &id) const {
+    T getValueByID(std::string const &id) const {
         if (ids_.empty())
             throw AmiException(
                     "Cannot access values by ID as no IDs are set");
@@ -57,7 +60,7 @@ public:
      * @param name Name
      * @return Value for the given name
      */
-    realtype getValueByName(std::string const &name) const {
+    T getValueByName(std::string const &name) const {
         if (names_.empty())
             throw AmiException(
                     "Cannot access values by name as no names are set");
@@ -94,7 +97,7 @@ public:
      * @brief Get stored values.
      * @return Vector of values
      */
-    std::vector<realtype> getValues() const {
+    std::vector<T> getValues() const {
         return values_;
     }
 
@@ -102,7 +105,7 @@ public:
      * @brief Set the array values.
      * @param values Vector of values
      */
-    void setValues(std::vector<realtype> const &values) {
+    void setValues(std::vector<T> const &values) {
         if (values.size() != ids_.size())
             throw AmiException(
                     "Number of provided values does not expected size.");
@@ -114,7 +117,7 @@ public:
      * @param id ID
      * @param value Value
      */
-    void setValueByID(std::string const &id, realtype value) {
+    void setValueByID(std::string const &id, T value) {
         auto it = std::find(ids_.begin(), ids_.end(), id);
         if (it != ids_.end()) {
             values_.at(it - ids_.begin()) = value;
@@ -128,7 +131,7 @@ public:
      * @param values Map of IDs to values
      * @param ignoreErrors Ignore errors such as non-existant IDs
      */
-    void setValueByID(const std::map<std::string, realtype> &values,
+    void setValueByID(const std::map<std::string, T> &values,
                       bool ignoreErrors) {
         for (auto& kv : values) {
             try {
@@ -145,7 +148,7 @@ public:
      * @param name Name
      * @param value Value
      */
-    void setValueByName(std::string const &id, realtype value)
+    void setValueByName(std::string const &id, T value)
     {
         auto it = std::find(names_.begin(), names_.end(), id);
         if (it != names_.end()) {
@@ -160,7 +163,7 @@ public:
      * @param values Map of names to values
      * @param ignoreErrors Ignore errors such as non-existant names
      */
-    void setValueByName(const std::map<std::string, realtype> &values,
+    void setValueByName(const std::map<std::string, T> &values,
                         bool ignoreErrors)
     {
         for (auto& kv : values) {
@@ -180,7 +183,7 @@ public:
      * @param value New value
      * @return Number of matching IDs
      */
-    int setValueByIDRegex(std::string const &id_regex, realtype value) {
+    int setValueByIDRegex(std::string const &id_regex, T value) {
         if (ids_.empty())
             throw AmiException(
                     "Cannot access values by ID as no IDs are set");
@@ -194,7 +197,7 @@ public:
      * @param value New value
      * @return Number of matching names
      */
-    int setValueByNameRegex(std::string const &name_regex, realtype value) {
+    int setValueByNameRegex(std::string const &name_regex, T value) {
         if (names_.empty())
             throw AmiException(
                     "Cannot access values by name as no names are set");
@@ -205,7 +208,7 @@ public:
 private:
     gsl::span<const char*> ids_;
     gsl::span<const char*> names_;
-    std::vector<realtype> values_;
+    std::vector<T> values_;
 };
 
 
@@ -219,8 +222,9 @@ private:
  * @param id_name string indicating whether name or id was specified
  * @return number of matched names/ids
  */
+template<typename T>
 int setValueByIdRegex(gsl::span<const char*> ids,
-                      gsl::span<realtype> values, realtype value,
+                      gsl::span<T> values, T value,
                       std::string const &regex,
                       const char *id_name) {
     try {
@@ -256,10 +260,11 @@ int setValueByIdRegex(gsl::span<const char*> ids,
  * @param id_name string indicating whether name or id was specified
  * @return value of the selected entry
  */
-realtype getValueById(gsl::span<const char*> ids,
-                      gsl::span<const realtype> values,
-                      std::string const &id,
-                      const char *id_name) {
+template<typename T>
+T getValueById(gsl::span<const char*> ids,
+               gsl::span<const T> values,
+               std::string const &id,
+               const char *id_name) {
     auto it = std::find(ids.begin(), ids.end(), id);
     if (it != ids.end())
         return values.at(it - ids.begin());
