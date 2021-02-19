@@ -8,6 +8,7 @@
 #include "amici/simulation_parameters.h"
 #include "amici/model_dimensions.h"
 #include "amici/model_state.h"
+#include "amici/named_array.h"
 
 #include <map>
 #include <memory>

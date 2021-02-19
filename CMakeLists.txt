@@ -136,6 +136,7 @@ set(AMICI_SRC_LIST
     ${CMAKE_SOURCE_DIR}/src/model_ode.cpp
     ${CMAKE_SOURCE_DIR}/src/model_dae.cpp
     ${CMAKE_SOURCE_DIR}/src/model_state.cpp
+    ${CMAKE_SOURCE_DIR}/src/named_array.cpp
     ${CMAKE_SOURCE_DIR}/src/newton_solver.cpp
     ${CMAKE_SOURCE_DIR}/src/forwardproblem.cpp
     ${CMAKE_SOURCE_DIR}/src/steadystateproblem.cpp
